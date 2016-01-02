@@ -6,35 +6,41 @@
 
 var UI = require('ui');
 var Vector2 = require('vector2');
-var ajax = require('ajax');
 
-var UP_BUTTON = 'up';
-var DOWN_BUTTON = 'down';
-var SELECT_BUTTON = 'select';
-var CLICK_ACTION = 'click';
+//GLOBAL MODULES
+var pHTTP = require('pHTTP');
+var pColors = require('pColors');
+var pConstants = require('pConstants');
+var pText = require('pText');
+
+//APPS
+var pTransit = require('pTransit');
+var pWeather = require('pWeather');
 
 var main = new UI.Card({
   title: 'Pebble Dashboard',
   icon: '',
   subtitle: '',
-  body: 'Toggle up or down for additional options',
-  subtitleColor: 'indigo', // Named colors
-  bodyColor: '#9a0036' // Hex colors
+  body: '\nToggle up or down for options',
+  subtitleColor: pColors.BLACK.named, // Named colors
+  bodyColor: pColors.BLACK.named // Hex colors
 });
 
 main.show();
 
-main.on(CLICK_ACTION, SELECT_BUTTON, function(e) {
+main.on(pConstants.ACTION.CLICK_ACTION, pConstants.BUTTON.SELECT_BUTTON, function(e) {
   var wind = new UI.Window({
-    fullscreen: true,
+    fullscreen: true
   });
-  var textfield = new UI.Text({
+  
+  var textField = new UI.Text({
     position: new Vector2(0, 65),
     size: new Vector2(144, 30),
-    font: 'gothic-24-bold',
+    font: pText.FONT.GOTHIC_BOLD,
     text: 'Text Anywhere!',
-    textAlign: 'center'
+    textAlign: pText.ALIGNMENT.CENTER
   });
-  wind.add(textfield);
+  
+  wind.add(textField);
   wind.show();
 });
