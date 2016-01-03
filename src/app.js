@@ -17,8 +17,10 @@ var main = new UI.Card({
   icon: '',
   subtitle: '',
   body: '\nPush select button for options',
-  subtitleColor: pColors.BLACK.named, // Named colors
-  bodyColor: pColors.BLACK.named // Hex colors
+  titleColor: pColors.WHITE.named, 
+  subtitleColor: pColors.WHITE.named, 
+  bodyColor: pColors.RED.named,
+  backgroundColor: pColors.BLACK.named
 });
 
 main.show();
