@@ -2,52 +2,27 @@ var pHTTP = require('pHTTP');
 var UI = require('ui');
 var Vector2 = require('vector2');
 var Accel = require('ui/accel');
-var Vibe = require('ui/vibe');
+//var Vibe = require('ui/vibe');
 
 var pColors = require('pColors');
 var pText = require('pText');
 var pConstants = require('pConstants');
 
 var PREFIX_BASE_URL = 'http://api.openweathermap.org/data/2.5/forecast?';
-var LAT_BASE_URL = 'lat=';
-var LONG_BASE_URL = '&lon=';
+//var LAT_BASE_URL = 'lat=';
+//var LONG_BASE_URL = 'lon=';
+var ID_BASE_URL = 'id=';
 var SUFFIX_BASE_URL = '&appid=';
 var degreeSymbol = '\xB0';
-
-Accel.init();
-var locationWatcher;
 
 var defaultParams = 
 {
   'API_KEY': 'f58fbca2dc684945fdf19450bfe963f9',
-  'LATITUDE': '0',
-  'LONGITUDE': '0'
+  'CITY': 'LONDON',
+  'CITY_ID': '2643743'
 };
+
 var runtimeParams = {};
-
-var geoLocationSuccessHandler = function(pos) {
-  console.log('lat= ' + pos.coords.latitude + ' lon= ' + pos.coords.longitude);
-  
-  runtimeParams = defaultParams;
-  runtimeParams.LATITUDE = pos.coords.latitude;
-  runtimeParams.LONGITUDE = pos.coords.longitude;
-};
-
-var geoLocationErrorHandler = function(err) {
-  console.log('location error (' + err.code + '): ' + err.message);
-  runtimeParams = defaultParams;
-};
-
-var locationOptions = 
-{
-  timeout: 15000, 
-  maximumAge: 60000
-};
-
-Pebble.addEventListener('ready', function(e) {
-  locationWatcher = navigator.geolocation.watchPosition(geoLocationSuccessHandler, geoLocationErrorHandler, locationOptions);
-});
-
 var splashWindow = new UI.Window();
 
 // Text element to inform user
@@ -62,27 +37,21 @@ var splashWindowText = new UI.Text({
   backgroundColor: pColors.WHITE.named
 });
 
-var getWeatherInformation = function()
-{  
-  var additionalOptions = new pHTTP.AdditionalOptions('json', true); 
-  var url = PREFIX_BASE_URL + 
-      LAT_BASE_URL + runtimeParams.LATITUDE  + 
-      LONG_BASE_URL + runtimeParams.LONGITUDE + 
-      SUFFIX_BASE_URL + runtimeParams.API_KEY;
-  
-  console.log('Fetching Weather details from url: [' + url + ']');  
-  pHTTP.GET(url, pWeatherSuccessHandler, pWeatherFailureHandler, additionalOptions);
-};
-
 var pWeatherFailureHandler = function(data) {
-  // Success!
   console.log('Failed to fetch weather data!'); 
+  var errorCard = new UI.Card({
+    title: 'Error',
+    subtitle: '',
+    body: '\nFailed to load weather information'
+  });
+  
+  errorCard.show();
+  splashWindow.hide();
 };
 
 var pWeatherSuccessHandler = function(data) {
   // Success!
   console.log('Successfully fetched weather data!');
-  Vibe.vibrate('short');
   
   var parseFeed = function(data, quantity) {
     var items = [];
@@ -91,7 +60,7 @@ var pWeatherSuccessHandler = function(data) {
       var title = data.list[i].weather[0].main;
       
       var temperature = Math.round(data.list[i].main.temp - 273.15) + degreeSymbol + 'C';
-      title = title.charAt(0).toUpperCase() + title.substring(1) + ' - ' + temperature;
+      title = title.charAt(0).toUpperCase() + title.substring(1) + ': ' + temperature;
   
       // Get date/time substring
       //var time = data.list[i].dt_txt;
@@ -115,15 +84,14 @@ var pWeatherSuccessHandler = function(data) {
   };
 
   var menuItems = parseFeed(data, 10);
-
   var resultsMenu = new UI.Menu({
-  sections: [{
-    title: 'Current Forecast: ',
+    sections: [{
+      title: 'Current Forecast: ',
       items: menuItems
     }]
   });
-  
   resultsMenu.show();
+  
   splashWindow.hide();
   
   // Add an action for SELECT
@@ -153,16 +121,36 @@ var pWeatherSuccessHandler = function(data) {
   });  
   
   // Register for 'tap' events
-  resultsMenu.on('accelTap', function(e) {
+  resultsMenu.on(pConstants.ACTION.ACCELEROMETER_TAP, function(e) {
     // Make another request to openweathermap.org  
-    getWeatherInformation();
+    splashWindow.show();
+    
+    getWeatherInformation(resultsMenu);
   });
+};
+
+/* jshint latedef:false */
+var getWeatherInformation = function(resultsMenu)
+{  
+  if(resultsMenu)
+  {
+    resultsMenu.hide();    
+  }
+  runtimeParams = defaultParams;     
+  var additionalOptions = new pHTTP.AdditionalOptions('json', true); 
+  var url = PREFIX_BASE_URL + 
+      ID_BASE_URL + runtimeParams.CITY_ID  + 
+      SUFFIX_BASE_URL + runtimeParams.API_KEY;
+  
+  console.log('Fetching Weather details from url: [' + url + ']');  
+  pHTTP.GET(url, pWeatherSuccessHandler, pWeatherFailureHandler, additionalOptions);
 };
 
 var execute = function()
 {
   splashWindow.add(splashWindowText);
   splashWindow.show();
+  Accel.init();
   getWeatherInformation();
 };
 

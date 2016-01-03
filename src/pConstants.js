@@ -8,8 +8,13 @@ var pConstants =
   },
   'ACTION':
   {
-    'CLICK_ACTION': 'click'
-  }  
-}
+    'CLICK_ACTION': 'click',
+    'ACCELEROMETER_TAP': 'accelTap'
+  },
+  'VIBRATION':
+  {
+    'SHORT': 'short'
+  }
+};
 
 this.exports = pConstants;

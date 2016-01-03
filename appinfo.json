@@ -4,7 +4,7 @@
         "location"
     ],
     "companyName": "Sigerco",
-    "longName": "Pebble Dashboard",
+    "longName": "pDashboard",
     "projectType": "pebblejs",
     "resources": {
         "media": [
@@ -39,7 +39,7 @@
     ],
     "uuid": "2f64a805-4068-4247-90ae-85ee72e4534e",
     "versionCode": 1,
-    "versionLabel": "1.0",
+    "versionLabel": "1.2",
     "watchapp": {
         "hiddenApp": false,
         "watchface": false
