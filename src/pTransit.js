@@ -1,6 +1,6 @@
 var pTransit = {
   "value" : 42,                          
-  "functionA" : function() {
+  "execute" : function() {
     console.log("This is working now!");
   }
 };

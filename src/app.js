@@ -1,27 +1,22 @@
 /**
- * Welcome to Pebble.js!
- *
- * This is where you write your app.
+ * Pebble Dashboard
+ * author: sigerco
+ * 
+ * Description: App to access different locaton based information
  */
 
 var UI = require('ui');
-var Vector2 = require('vector2');
 
 //GLOBAL MODULES
-var pHTTP = require('pHTTP');
 var pColors = require('pColors');
 var pConstants = require('pConstants');
-var pText = require('pText');
-
-//APPS
-var pTransit = require('pTransit');
-var pWeather = require('pWeather');
+var pAppList = require('pAppList');
 
 var main = new UI.Card({
-  title: 'Pebble Dashboard',
+  title: 'Welcome to Pebble Dashboard',
   icon: '',
   subtitle: '',
-  body: '\nToggle up or down for options',
+  body: '\nPush select button for options',
   subtitleColor: pColors.BLACK.named, // Named colors
   bodyColor: pColors.BLACK.named // Hex colors
 });
@@ -29,18 +24,34 @@ var main = new UI.Card({
 main.show();
 
 main.on(pConstants.ACTION.CLICK_ACTION, pConstants.BUTTON.SELECT_BUTTON, function(e) {
-  var wind = new UI.Window({
-    fullscreen: true
+  
+  var menuItems = [];
+  for(var i = 0; i < pAppList.appList.length; i++)
+  {    
+      menuItems.push({
+        title: pAppList.appList[i].appName,
+        subtitle: pAppList.appList[i].appDescription,
+        applicationId: pAppList.appList[i].appId
+      });
+  }
+   
+  var appsMenu = new UI.Menu({
+  sections: [{
+      title: 'Dashboard Menu',
+      items: menuItems
+      }]
   });
   
-  var textField = new UI.Text({
-    position: new Vector2(0, 65),
-    size: new Vector2(144, 30),
-    font: pText.FONT.GOTHIC_BOLD,
-    text: 'Text Anywhere!',
-    textAlign: pText.ALIGNMENT.CENTER
-  });
+  // Show the Menu
+  appsMenu.show();  
   
-  wind.add(textField);
-  wind.show();
+  appsMenu.on(pConstants.BUTTON.SELECT_BUTTON, function(e) {
+    for(var i = 0; i < pAppList.appList.length; i++)
+    {   
+      if(e.item.applicationId === pAppList.appList[i].appId && typeof pAppList.appList[i].app.execute == 'function')
+      {
+         pAppList.appList[i].app.execute();
+      }
+    }    
+  });  
 });

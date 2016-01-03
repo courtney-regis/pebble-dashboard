@@ -1,7 +1,7 @@
 var ajax = require('ajax');
 
 var pHTTP = {
-  'additionalOptions': function(type, crossDomain)
+  'AdditionalOptions': function(type, crossDomain)
   {
     this.type = type;
     this.crossDomain = crossDomain;

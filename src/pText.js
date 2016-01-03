@@ -2,7 +2,8 @@ var pText =
 {
   'FONT':
   {
-    'GOTHIC_BOLD':'gothic-24-bold'
+    'GOTHIC_24_BOLD':'gothic-24-bold',
+    'GOTHIC_28_BOLD':'gothic-28-bold'
   },
   'ALIGNMENT':
   {
